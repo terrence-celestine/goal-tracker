@@ -9,29 +9,34 @@ import Register from './pages/Register'
 import CustomGoal from './pages/CustomGoal'
 import Achievements from './pages/Achievements'
 import Profile from './pages/Pages'
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
-  
   return (
-    <>
-      <Router>
-        <Routes>
-          {/* Auth pages no layout */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          {/* App pages wrapped in a layout */}
-          <Route element={<Layout/>}>
-          <Route path="/" element={<Home/>} />
+    <Router>
+      <Routes>
+        {/* Auth pages — no layout */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Public onboarding — no auth needed */}
+        <Route element={<Layout />}>
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/onboarding/goals" element={<GoalSuggestions />} />
-          <Route path="/goals/new" element={<CustomGoal />} />
-          <Route path="/goals/:id" element={<GoalDetails />} />
-          <Route path="/achievements" element={<Achievements />} /> 
-          <Route path="/profile" element={<Profile />} />
+        </Route>
+
+        {/* Protected pages — redirect to /login if not authenticated */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/goals/new" element={<CustomGoal />} />
+            <Route path="/goals/:id" element={<GoalDetails />} />
+            <Route path="/achievements" element={<Achievements />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
-        </Routes>
-      </Router>
-    </>
+        </Route>
+      </Routes>
+    </Router>
   )
 }
 
