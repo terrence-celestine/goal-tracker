@@ -1,0 +1,276 @@
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+
+interface Goal {
+  title: string
+  description: string
+  dueDate?: string
+}
+
+const CATEGORY_COLORS: Record<number, { bg: string; text: string; dot: string }> = {
+  0: { bg: '#EDE9FE', text: '#7C3AED', dot: '#A78BFA' },
+  1: { bg: '#DCFCE7', text: '#15803D', dot: '#4ADE80' },
+  2: { bg: '#FEF3C7', text: '#B45309', dot: '#FCD34D' },
+  3: { bg: '#FCE7F3', text: '#BE185D', dot: '#F472B6' },
+  4: { bg: '#E0F2FE', text: '#0369A1', dot: '#38BDF8' },
+}
+
+export default function GoalDetail() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const index = Number(id)
+
+  const [goal, setGoal] = useState<Goal | null>(null)
+  const [completed, setCompleted] = useState(false)
+  const [dueDate, setDueDate] = useState<string>('')
+  const [editingDate, setEditingDate] = useState(false)
+  const [notes, setNotes] = useState('')
+  const [editingNotes, setEditingNotes] = useState(false)
+
+  const color = CATEGORY_COLORS[index % 5]
+
+  useEffect(() => {
+    const load = () => {
+      const stored = localStorage.getItem('pendingGoals')
+      if (!stored) return navigate('/')
+      const goals: Goal[] = JSON.parse(stored)
+      if (!goals[index]) return navigate('/')
+      setGoal(goals[index])
+      setDueDate(goals[index].dueDate ?? '')
+  
+      const completedIds: number[] = JSON.parse(localStorage.getItem('completedGoals') ?? '[]')
+      setCompleted(completedIds.includes(index))
+  
+      const savedNotes = localStorage.getItem(`goal_notes_${index}`) ?? ''
+      setNotes(savedNotes)
+    }
+  
+    load()
+  }, [index])
+  
+  const isOverdue = dueDate && new Date(dueDate) < new Date() && !completed
+
+  const toggleComplete = () => {
+    const completedIds: number[] = JSON.parse(localStorage.getItem('completedGoals') ?? '[]')
+    if (completed) {
+      localStorage.setItem('completedGoals', JSON.stringify(completedIds.filter(i => i !== index)))
+    } else {
+      localStorage.setItem('completedGoals', JSON.stringify([...completedIds, index]))
+    }
+    setCompleted(prev => !prev)
+  }
+
+  const saveDate = (newDate: string) => {
+    const stored = localStorage.getItem('pendingGoals')
+    if (!stored) return
+    const goals: Goal[] = JSON.parse(stored)
+    goals[index].dueDate = newDate
+    localStorage.setItem('pendingGoals', JSON.stringify(goals))
+    setDueDate(newDate)
+    setEditingDate(false)
+  }
+
+  const saveNotes = () => {
+    localStorage.setItem(`goal_notes_${index}`, notes)
+    setEditingNotes(false)
+  }
+
+  const formattedDueDate = dueDate
+    ? new Date(dueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : null
+
+  if (!goal) return null
+
+  return (
+    <div className="min-h-screen bg-[#F7F6F2] font-sans">
+
+      {/* Hero header */}
+      <div className="bg-[#1A1A2E] px-5 pt-14 pb-10 relative overflow-hidden">
+
+        {/* Decorative circle */}
+        <div
+          className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10"
+          style={{ background: color.dot }}
+        />
+
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-[#7C7CA8] text-[13px] font-medium mb-8 bg-transparent border-none cursor-pointer p-0"
+        >
+          <i className="ti ti-arrow-left" style={{ fontSize: '16px' }} aria-hidden="true" />
+          Back to goals
+        </button>
+
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            {/* Status badge */}
+            <div className="inline-flex items-center gap-1.5 mb-3">
+              {completed ? (
+                <span className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1 rounded-full bg-[#14532D] text-[#4ADE80]">
+                  <i className="ti ti-circle-check" style={{ fontSize: '13px' }} aria-hidden="true" />
+                  Completed
+                </span>
+              ) : isOverdue ? (
+                <span className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1 rounded-full bg-[#450A0A] text-[#F87171]">
+                  <i className="ti ti-clock-exclamation" style={{ fontSize: '13px' }} aria-hidden="true" />
+                  Overdue
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1 rounded-full bg-[#2A2A45] text-[#A78BFA]">
+                  <i className="ti ti-player-play" style={{ fontSize: '13px' }} aria-hidden="true" />
+                  In progress
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-[22px] font-bold text-white leading-snug">
+              {goal.title}
+            </h1>
+          </div>
+
+          {/* Large completion ring */}
+          <button
+            onClick={toggleComplete}
+            className="shrink-0 w-14 h-14 rounded-full border-none cursor-pointer flex items-center justify-center transition-all duration-200"
+            style={{
+              background: completed ? color.dot : 'transparent',
+              border: `2.5px solid ${completed ? color.dot : '#2A2A45'}`,
+            }}
+            aria-label="Toggle complete"
+          >
+            {completed && (
+              <i className="ti ti-check" style={{ fontSize: '22px', color: '#fff' }} aria-hidden="true" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="px-5 py-6 flex flex-col gap-4 max-w-2xl mx-auto">
+
+        {/* Overdue warning */}
+        {isOverdue && (
+          <div className="bg-[#FEF2F2] border border-[#FECACA] rounded-2xl px-4 py-3.5 flex items-start gap-3">
+            <i className="ti ti-alert-triangle" style={{ fontSize: '18px', color: '#EF4444', marginTop: '1px' }} aria-hidden="true" />
+            <div className="flex-1">
+              <p className="text-[13px] font-semibold text-[#991B1B] mb-0.5">This goal is overdue</p>
+              <p className="text-[12px] text-[#B91C1C]">Pick a new due date to get back on track.</p>
+            </div>
+            <button
+              onClick={() => setEditingDate(true)}
+              className="text-[12px] font-semibold text-[#991B1B] bg-[#FECACA] border-none rounded-lg px-3 py-1.5 cursor-pointer whitespace-nowrap"
+            >
+              Reschedule
+            </button>
+          </div>
+        )}
+
+        {/* Description card */}
+        <div className="bg-white border border-[#EDEBE6] rounded-2xl p-5">
+          <p className="text-[11px] font-semibold tracking-widest text-[#9CA3AF] uppercase mb-3">About this goal</p>
+          <p className="text-[14px] text-[#374151] leading-relaxed">{goal.description}</p>
+        </div>
+
+        {/* Due date card */}
+        <div className="bg-white border border-[#EDEBE6] rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[11px] font-semibold tracking-widest text-[#9CA3AF] uppercase">Due date</p>
+            <button
+              onClick={() => setEditingDate(true)}
+              className="text-[12px] font-medium text-[#A78BFA] bg-transparent border-none cursor-pointer p-0"
+            >
+              {dueDate ? 'Change' : 'Set date'}
+            </button>
+          </div>
+
+          {editingDate ? (
+            <div className="flex items-center gap-3 mt-3">
+              <input
+                type="date"
+                defaultValue={dueDate}
+                onChange={e => saveDate(e.target.value)}
+                className="flex-1 bg-[#F7F6F2] border border-[#EDEBE6] rounded-xl px-3 py-2 text-[14px] text-[#1A1A2E] outline-none"
+                autoFocus
+              />
+              <button
+                onClick={() => setEditingDate(false)}
+                className="text-[13px] text-[#9CA3AF] bg-transparent border-none cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 mt-2">
+              <i
+                className="ti ti-calendar"
+                style={{ fontSize: '18px', color: isOverdue ? '#EF4444' : '#A78BFA' }}
+                aria-hidden="true"
+              />
+              <p className={`text-[16px] font-semibold ${isOverdue ? 'text-[#EF4444]' : 'text-[#1A1A2E]'}`}>
+                {formattedDueDate ?? 'No due date set'}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Notes card */}
+        <div className="bg-white border border-[#EDEBE6] rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[11px] font-semibold tracking-widest text-[#9CA3AF] uppercase">Notes</p>
+            {!editingNotes && (
+              <button
+                onClick={() => setEditingNotes(true)}
+                className="text-[12px] font-medium text-[#A78BFA] bg-transparent border-none cursor-pointer p-0"
+              >
+                {notes ? 'Edit' : 'Add note'}
+              </button>
+            )}
+          </div>
+
+          {editingNotes ? (
+            <div className="flex flex-col gap-3">
+              <textarea
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Add any notes, reminders, or progress updates..."
+                rows={4}
+                className="w-full bg-[#F7F6F2] border border-[#EDEBE6] rounded-xl px-3 py-2.5 text-[14px] text-[#1A1A2E] outline-none resize-none placeholder:text-[#D1D5DB]"
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={saveNotes}
+                  className="flex-1 py-2.5 rounded-xl bg-[#1A1A2E] text-white text-[13px] font-semibold border-none cursor-pointer"
+                >
+                  Save note
+                </button>
+                <button
+                  onClick={() => setEditingNotes(false)}
+                  className="px-4 py-2.5 rounded-xl bg-[#F3F4F6] text-[#6B7280] text-[13px] font-semibold border-none cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-[14px] text-[#374151] leading-relaxed">
+              {notes || <span className="text-[#D1D5DB]">No notes yet</span>}
+            </p>
+          )}
+        </div>
+
+        {/* Complete CTA */}
+        <button
+          onClick={toggleComplete}
+          className="w-full py-4 rounded-2xl text-[15px] font-semibold border-none cursor-pointer transition-all duration-200"
+          style={{
+            background: completed ? '#F3F4F6' : '#1A1A2E',
+            color: completed ? '#6B7280' : '#fff',
+          }}
+        >
+          {completed ? '↩ Mark as incomplete' : '✓ Mark as complete'}
+        </button>
+
+      </div>
+    </div>
+  )
+}
