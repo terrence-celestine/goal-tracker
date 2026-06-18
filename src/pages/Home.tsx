@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChevronRight, Plus } from 'lucide-react'
 
 interface Goal {
     id?: number
@@ -9,6 +10,7 @@ interface Goal {
 }
 
 const Home = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loadingGoals, setLoadingGoals] = useState(true)
   const [pendingGoals, setPendingGoals] = useState<Goal[]>([])
   const [completedIds, setCompletedIds] = useState<Set<number>>(new Set())
@@ -22,12 +24,17 @@ const Home = () => {
       const authRes = await fetch('/api/auth')
   
       if (authRes.ok) {
+        setIsAuthenticated(true)
         // Authenticated — fetch from DB
         const data = await fetch('/api/user-goals').then(r => r.json())
   
         if (Array.isArray(data) && data.length > 0) {
           // DB has goals — use them as source of truth
           setPendingGoals(data)
+          const dbCompletedIds = data
+          .filter((g: Goal) => g.status === 'done')
+          .map((g: Goal) => g.id!)
+        setCompletedIds(new Set(dbCompletedIds))
         } else {
           // DB returned empty — check localStorage as fallback
           const stored = localStorage.getItem('pendingGoals')
@@ -69,12 +76,28 @@ const Home = () => {
     day: 'numeric',
   })
 
-  const toggleComplete = (index: number) => {
+  const toggleComplete = async (goalId: number) => {
+    const isDone = completedIds.has(goalId)
+    const newStatus = isDone ? 'active' : 'done'
+  
+    if (isAuthenticated) {
+      await fetch(`/api/user-goals/${goalId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
+
+      if (newStatus === 'done') {
+
+      }
+    }
+  
     setCompletedIds(prev => {
       const next = new Set(prev)
-      next.has(index) ? next.delete(index) : next.add(index)
-      const arr = Array.from(next)
-      localStorage.setItem('completedGoals', JSON.stringify(arr))
+      next.has(goalId) ? next.delete(goalId) : next.add(goalId)
+      if (!isAuthenticated) {
+        localStorage.setItem('completedGoals', JSON.stringify(Array.from(next)))
+      }
       return next
     })
   }
@@ -140,7 +163,7 @@ const Home = () => {
       <div className="flex-1 overflow-y-auto px-8 py-6 pb-24 md:pb-6">
 
         {/* Unsaved banner */}
-        {pendingGoals.length > 0 && (
+        {!isAuthenticated && pendingGoals.length > 0 && (
           <div className="flex items-start gap-3 bg-[#FFF8EC] border border-[#F5A623]/30 rounded-2xl px-5 py-4 mb-6">
             <span className="text-lg mt-0.5">⚠️</span>
             <div className="flex-1">
@@ -193,18 +216,18 @@ const Home = () => {
             </div>
 
             <div className="flex flex-col gap-3">
-              {pendingGoals.map((goal, i) => {
-                const isDone = completedIds.has(i)
+              {pendingGoals.map((goal) => {
+                const isDone = completedIds.has(goal.id!)
                 return (
                   <div
-                    key={i}
+                    key={goal.id}
                     className="bg-white border border-[#EDEBE6] rounded-2xl px-5 py-4 flex items-center gap-4 cursor-pointer hover:border-[#D1D5DB] transition-colors"
-                    onClick={() => navigate(`/goals/${i}`)}
+                    onClick={() => navigate(`/goals/${goal.id}`)}
                   >
                     <button
                       onClick={e => {
                         e.stopPropagation()
-                        toggleComplete(i)
+                        toggleComplete(goal.id)
                       }}
                       className={`w-6 h-6 min-w-[24px] rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-all duration-150 ${
                         isDone ? 'bg-[#A78BFA] text-white border-none' : 'bg-transparent text-transparent'
@@ -224,7 +247,7 @@ const Home = () => {
                     <span className={`text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap ${isDone ? 'bg-[#EDE9FE] text-[#7C3AED]' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>
                       {isDone ? 'Done' : 'Active'}
                     </span>
-                    <i className="ti ti-chevron-right text-[#D1D5DB]" style={{ fontSize: '16px' }} aria-hidden="true" />
+                    <ChevronRight size={16} color="#D1D5DB" />
                   </div>
                 )
               })}
@@ -248,6 +271,13 @@ const Home = () => {
           </div>
         )}
       </div>
+      <button
+        onClick={() => navigate('/goals/new')}
+        className="fixed bottom-24 right-6 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-[#F5A623] text-[#0F1117] border-none cursor-pointer flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95 z-10"
+        aria-label="Add custom goal"
+        >
+        <Plus size={24} />
+    </button>
     </div>
   )
 }

@@ -6,6 +6,9 @@ import GoalDetails from './pages/GoalDetails'
 import Layout from './components/Layout'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import CustomGoal from './pages/CustomGoal'
+import Achievements from './pages/Achievements'
+
 function App() {
   
   return (
@@ -20,7 +23,9 @@ function App() {
           <Route path="/" element={<Home/>} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/onboarding/goals" element={<GoalSuggestions />} />
-          <Route path="/goal/:id" element={<GoalDetails />} />
+          <Route path="/goals/new" element={<CustomGoal />} />
+          <Route path="/goals/:id" element={<GoalDetails />} />
+          <Route path="/achievements" element={<Achievements />} />
           </Route>
         </Routes>
       </Router>

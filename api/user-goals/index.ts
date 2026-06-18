@@ -1,8 +1,8 @@
-// api/user-goals.ts
+// api/user-goals/index.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import * as schema from '../src/lib/schema';
+import * as schema from '../../src/lib/schema';
 import { eq } from 'drizzle-orm';   
 import { parse } from 'cookie';
 import jwt from 'jsonwebtoken';
