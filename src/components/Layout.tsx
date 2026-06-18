@@ -1,11 +1,12 @@
 import { useNavigate, useLocation, Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Home, Compass, Trophy, User, LogOut } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { label: 'Home', icon: 'ti-home', path: '/' },
-  { label: 'Explore', icon: 'ti-compass', path: '/onboarding' },
-  { label: 'Achievements', icon: 'ti-trophy', path: '/achievements' },
-  { label: 'Profile', icon: 'ti-user', path: '/profile' },
+  { label: 'Home', icon: Home, path: '/' },
+  { label: 'Explore', icon: Compass, path: '/onboarding' },
+  { label: 'Achievements', icon: Trophy, path: '/achievements' },
+  { label: 'Profile', icon: User, path: '/profile' },
 ]
 
 export default function Layout() {
@@ -29,20 +30,21 @@ export default function Layout() {
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
-          {NAV_ITEMS.map(item => {
+        {NAV_ITEMS.map(item => {
             const isActive = location.pathname === item.path
+            const Icon = item.icon
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className="flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium border-none cursor-pointer transition-all duration-150 text-left bg-transparent"
+                className="flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium border-none cursor-pointer transition-all duration-150 text-left w-full bg-transparent"
                 style={{
                   color: isActive ? '#fff' : '#7C7CA8',
                   background: isActive ? 'rgba(167,139,250,0.1)' : 'transparent',
                   borderRight: isActive ? '2px solid #A78BFA' : '2px solid transparent',
                 }}
               >
-                <i className={`ti ${item.icon}`} style={{ fontSize: '16px' }} aria-hidden="true" />
+                <Icon size={16} />
                 {item.label}
               </button>
             )
@@ -51,9 +53,9 @@ export default function Layout() {
 
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium text-[#F87171] bg-transparent border-none cursor-pointer"
+          className="flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium text-[#F87171] bg-transparent border-none cursor-pointer w-full"
         >
-          <i className="ti ti-logout" style={{ fontSize: '16px' }} aria-hidden="true" />
+          <LogOut size={16} />
           Sign out
         </button>
       </aside>
@@ -64,17 +66,20 @@ export default function Layout() {
       </div>
 
       {/* Bottom nav — mobile only */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#F0EEE8] flex py-3 pb-5 z-10">
-        {NAV_ITEMS.map(item => {
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#F0EEE8] flex py-3 pb-5 z-20">
+      {NAV_ITEMS.map(item => {
           const isActive = location.pathname === item.path
+          const Icon = item.icon
           return (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
               className="flex-1 flex flex-col items-center gap-1 border-none bg-transparent cursor-pointer"
             >
-              <i className={`ti ${item.icon}`} style={{ fontSize: '20px', color: isActive ? '#A78BFA' : '#9CA3AF' }} aria-hidden="true" />
-              <span style={{ fontSize: '10px', fontWeight: 600, color: isActive ? '#A78BFA' : '#9CA3AF' }}>{item.label}</span>
+              <Icon size={20} color={isActive ? '#A78BFA' : '#9CA3AF'} />
+              <span style={{ fontSize: '10px', fontWeight: 600, color: isActive ? '#A78BFA' : '#9CA3AF' }}>
+                {item.label}
+              </span>
             </button>
           )
         })}

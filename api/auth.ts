@@ -32,12 +32,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // GET /api/auth — me
   if (req.method === 'GET') {
-    const user = getUserFromRequest(req);
-    if (!user) return res.status(401).json({ error: 'Not authenticated' });
+    const userSession = getUserFromRequest(req);
+    if (!userSession) return res.status(401).json({ error: 'Not authenticated' });
+  
+    const users = await db
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.id, parseInt(userSession.userId)))
+      .limit(1);
+  
+    if (users.length === 0) return res.status(401).json({ error: 'User not found' });
+  
     return res.status(200).json({
-      userId: user.userId,
-      email: user.email,
-      username: user.username,
+      userId: users[0].id,
+      email: users[0].email,
+      displayName: users[0].displayName,
     });
   }
 

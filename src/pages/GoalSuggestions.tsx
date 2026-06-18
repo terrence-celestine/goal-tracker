@@ -55,94 +55,102 @@ export default function GoalSuggestions() {
     localStorage.setItem('pendingGoals', JSON.stringify(selectedGoals))
     navigate('/')
   }
-
   return (
-    <div className="min-h-screen bg-[#0F1117] text-white px-5 pt-8 pb-32 font-sans">
-    <Helmet>
-      <title>Your suggestions · goal. - Track Your Progress, Achieve Your Dreams!</title>
-    </Helmet>
-      <button
-        onClick={() => navigate('/onboarding')}
-        className="flex items-center gap-1.5 text-sm text-gray-400 mb-6 bg-transparent border-none cursor-pointer p-0"
-      >
-        ← Back
-      </button>
-
-      <p className="text-[26px] font-semibold leading-snug mb-1.5">
-        Here are your goals
-      </p>
-      <p className="text-sm text-gray-400 mb-8">
-        Select the ones you want to work on
-      </p>
-
-      {error && (
-        <div className="bg-[#1F0F0F] border border-red-900 rounded-xl px-5 py-4 text-red-300 text-sm mb-4">
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <div className="space-y-3">
-          {Array(5).fill(null).map((_, i) => (
-            <div key={i} className="bg-[#1A1D27] rounded-2xl p-5 animate-pulse">
-              <div className="h-3.5 bg-[#2A2D3A] rounded-md w-3/5 mb-3" />
-              <div className="h-3 bg-[#2A2D3A] rounded-md w-11/12 mb-2" />
-              <div className="h-3 bg-[#2A2D3A] rounded-md w-3/4" />
+    <div className="flex-1 flex flex-col overflow-hidden bg-[#0F1117]">
+      <Helmet>
+        <title>Your suggestions · goal.</title>
+      </Helmet>
+  
+      <div className="flex-1 overflow-y-auto px-5 md:px-8 py-8 pb-6">
+        <div className="max-w-2xl mx-auto">
+  
+          <button
+            onClick={() => navigate('/onboarding')}
+            className="flex items-center gap-1.5 text-sm text-[#6B7280] mb-6 bg-transparent border-none cursor-pointer p-0"
+          >
+            ← Back
+          </button>
+  
+          <p className="text-[26px] font-bold text-white leading-snug mb-2">
+            Here are your goals
+          </p>
+          <p className="text-[14px] text-[#6B7280] mb-6">
+            Select the ones you want to work on
+          </p>
+  
+          {error && (
+            <div className="bg-[#1F0F0F] border border-red-900 rounded-xl px-5 py-4 text-red-300 text-sm mb-4">
+              {error}
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {goals.map((goal, i) => {
-            const isSelected = selected.has(i)
-            return (
-              <div
-                key={i}
-                onClick={() => toggle(i)}
-                className={`flex items-start gap-3 rounded-2xl p-5 cursor-pointer transition-all duration-150 ${
-                  isSelected
-                    ? 'bg-[#1F1A0F] border-[1.5px] border-[#F5A623]'
-                    : 'bg-[#1A1D27] border-[1.5px] border-[#2A2D3A]'
-                }`}
-              >
-                <div className={`mt-0.5 w-5 h-5 min-w-[20px] rounded-full flex items-center justify-center text-[11px] transition-all duration-150 ${
-                  isSelected
-                    ? 'bg-[#F5A623] border-[#F5A623] border-[1.5px] text-[#0F1117]'
-                    : 'border-[1.5px] border-[#2A2D3A]'
-                }`}>
-                  {isSelected ? '✓' : ''}
+          )}
+  
+          {loading ? (
+            <div className="space-y-3 mb-6">
+              {Array(5).fill(null).map((_, i) => (
+                <div key={i} className="bg-[#1A1D27] rounded-2xl p-5 animate-pulse">
+                  <div className="h-3.5 bg-[#2A2D3A] rounded-md w-3/5 mb-3" />
+                  <div className="h-3 bg-[#2A2D3A] rounded-md w-11/12 mb-2" />
+                  <div className="h-3 bg-[#2A2D3A] rounded-md w-3/4" />
                 </div>
-                <div className="flex-1">
-                  <p className={`text-left text-[15px] font-semibold mb-1 ${isSelected ? 'text-[#F5A623]' : 'text-gray-200'}`}>
-                    {goal.title}
-                  </p>
-                  <p className="text-left text-[13px] text-gray-500 leading-relaxed">
-                    {goal.description}
-                  </p>
-                </div>
-              </div>
-            )
-          })}
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3 mb-6">
+              {goals.map((goal, i) => {
+                const isSelected = selected.has(i)
+                return (
+                  <div
+                    key={i}
+                    onClick={() => toggle(i)}
+                    className="flex items-start gap-3 rounded-2xl p-5 cursor-pointer transition-all duration-150"
+                    style={{
+                      background: isSelected ? '#1F1A0F' : '#1A1D27',
+                      border: isSelected ? '1.5px solid #F5A623' : '1.5px solid #2A2D3A',
+                    }}
+                  >
+                    <div style={{
+                      width: '20px', height: '20px', minWidth: '20px',
+                      borderRadius: '50%',
+                      background: isSelected ? '#F5A623' : 'transparent',
+                      border: isSelected ? '1.5px solid #F5A623' : '1.5px solid #2A2D3A',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '11px', color: '#0F1117', marginTop: '2px',
+                    }}>
+                      {isSelected ? '✓' : ''}
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-left text-[15px] font-semibold mb-1 ${isSelected ? 'text-[#F5A623]' : 'text-[#E5E7EB]'}`}>
+                        {goal.title}
+                      </p>
+                      <p className="text-left text-[13px] text-[#6B7280] leading-relaxed">
+                        {goal.description}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+  
+          <p className="text-[13px] text-[#6B7280] text-center mb-4">
+            {counterText()}
+          </p>
+  
+          <button
+            onClick={handleAddGoals}
+            disabled={selected.size === 0}
+            className="w-full py-4 rounded-2xl text-[15px] font-semibold border-none transition-all duration-150"
+            style={{
+              background: selected.size === 0 ? '#2A2D3A' : '#F5A623',
+              color: selected.size === 0 ? '#4B5563' : '#0F1117',
+              cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
+            }}
+          >
+            Add to my goals →
+          </button>
+  
         </div>
-      )}
-
-      <div className="fixed bottom-0 left-0 right-0 px-5 pt-4 pb-6 bg-[#0F1117] border-t border-[#1A1D27]">
-        <p className="text-[13px] text-gray-400 text-center mb-2.5">
-          {counterText()}
-        </p>
-        <button
-          onClick={handleAddGoals}
-          disabled={selected.size === 0}
-          className={`w-full py-4 rounded-2xl text-base font-semibold transition-all duration-150 ${
-            selected.size === 0
-              ? 'bg-[#2A2D3A] text-gray-600 cursor-not-allowed'
-              : 'bg-[#F5A623] text-[#0F1117] cursor-pointer'
-          }`}
-        >
-          Add to my goals →
-        </button>
       </div>
-
     </div>
   )
 }

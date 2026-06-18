@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronRight, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import type { Goal } from '../types/goal'
 import { Helmet } from 'react-helmet-async'
 
 const Home = () => {
+  const [displayName, setDisplayName] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loadingGoals, setLoadingGoals] = useState(true)
   const [pendingGoals, setPendingGoals] = useState<Goal[]>([])
@@ -19,6 +20,8 @@ const Home = () => {
       const authRes = await fetch('/api/auth')
   
       if (authRes.ok) {
+        const authData = await authRes.json()
+        setDisplayName(authData.displayName)
         setIsAuthenticated(true)
         // Authenticated — fetch from DB
         const data = await fetch('/api/user-goals').then(r => r.json())
@@ -146,18 +149,22 @@ const Home = () => {
         <title>Home · goal. - Track Your Progress, Achieve Your Dreams!</title>
       </Helmet>
       {/* Top bar */}
-      <div className="flex items-center justify-between px-8 py-5 border-b border-[#EDEBE6] bg-[#F7F6F2]">
+<div className="flex items-center justify-between px-5 md:px-8 py-5 border-b border-[#EDEBE6] bg-[#F7F6F2]">
         <div>
           <p className="text-[20px] font-bold text-[#1A1A2E]">{greeting()} 👋</p>
           <p className="text-[12px] text-[#9CA3AF] mt-0.5">{today}</p>
         </div>
-        <div className="w-9 h-9 rounded-full bg-[#EDE9FE] flex items-center justify-center text-[13px] font-bold text-[#7C3AED]">
-          T
-        </div>
+        <button
+          onClick={() => navigate('/profile')}
+          className="w-9 h-9 rounded-full bg-[#EDE9FE] flex items-center justify-center text-[13px] font-bold text-[#7C3AED] border-none cursor-pointer hover:bg-[#DDD6FE] transition-colors"
+          >
+          {displayName ? displayName[0].toUpperCase() : '?'}
+          </button>
       </div>
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto px-8 py-6 pb-24 md:pb-6">
+      {/* Scrollable body */}
+<div className="flex-1 overflow-y-auto px-5 md:px-8 py-6 pb-28 md:pb-6">
 
         {/* Unsaved banner */}
         {!isAuthenticated && pendingGoals.length > 0 && (
@@ -180,7 +187,7 @@ const Home = () => {
 
         {/* Stat cards */}
         {totalCount > 0 && (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <div className="bg-white border border-[#EDEBE6] rounded-2xl p-5">
               <p className="text-[11px] text-[#9CA3AF] mb-1">Active goals</p>
               <p className="text-[28px] font-bold text-[#1A1A2E] leading-none">{totalCount - completedCount}</p>
@@ -191,7 +198,7 @@ const Home = () => {
               <p className="text-[28px] font-bold text-[#1A1A2E] leading-none">{completedCount}</p>
               <p className="text-[11px] text-[#A78BFA] font-medium mt-1">🔥 Keep going</p>
             </div>
-            <div className="bg-white border border-[#EDEBE6] rounded-2xl p-5 col-span-2 lg:col-span-1">
+            <div className="bg-white border border-[#EDEBE6] rounded-2xl p-5">
               <p className="text-[11px] text-[#9CA3AF] mb-1">Progress</p>
               <p className="text-[28px] font-bold text-[#1A1A2E] leading-none">{progressPct}%</p>
               <div className="mt-2 h-1.5 bg-[#EDE9FE] rounded-full overflow-hidden">
@@ -204,7 +211,7 @@ const Home = () => {
           </div>
         )}
 
-        {/* Goals list */}
+        {/* Goals Card */}
         {pendingGoals.length > 0 ? (
           <>
             <div className="flex items-center justify-between mb-3">
@@ -217,35 +224,37 @@ const Home = () => {
                 const isDone = completedIds.has(goal.id!)
                 return (
                   <div
-                    key={goal.id}
-                    className="bg-white border border-[#EDEBE6] rounded-2xl px-5 py-4 flex items-center gap-4 cursor-pointer hover:border-[#D1D5DB] transition-colors"
-                    onClick={() => navigate(`/goals/${goal.id}`)}
+                  key={goal.id}
+                  className="bg-white border border-[#EDEBE6] rounded-2xl px-4 py-3.5 flex items-center gap-3 cursor-pointer hover:border-[#D1D5DB] transition-colors"
+                  onClick={() => navigate(`/goals/${goal.id}`)}
+                >
+                  <button
+                    onClick={e => {
+                      e.stopPropagation()
+                      toggleComplete(goal.id)
+                    }}
+                    className={`w-6 h-6 min-w-[24px] rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-all duration-150 shrink-0 border-none ${
+                      isDone ? 'bg-[#A78BFA] text-white' : 'bg-transparent text-transparent'
+                    }`}
+                    style={{ border: isDone ? 'none' : '1.5px solid #E5E7EB' }}
                   >
-                    <button
-                      onClick={e => {
-                        e.stopPropagation()
-                        toggleComplete(goal.id)
-                      }}
-                      className={`w-6 h-6 min-w-[24px] rounded-full flex items-center justify-center text-[11px] font-bold cursor-pointer transition-all duration-150 ${
-                        isDone ? 'bg-[#A78BFA] text-white border-none' : 'bg-transparent text-transparent'
-                      }`}
-                      style={{ border: isDone ? 'none' : '1.5px solid #E5E7EB' }}
-                    >
-                      ✓
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-left text-[14px] font-semibold transition-all duration-150 truncate ${isDone ? 'text-[#9CA3AF] line-through' : 'text-[#1A1A2E]'}`}>
-                        {goal.title}
-                      </p>
-                      <p className="text-left text-[12px] text-[#9CA3AF] leading-relaxed mt-0.5 truncate">
-                        {goal.description}
-                      </p>
-                    </div>
-                    <span className={`text-[11px] font-semibold px-3 py-1 rounded-full whitespace-nowrap ${isDone ? 'bg-[#EDE9FE] text-[#7C3AED]' : 'bg-[#F3F4F6] text-[#9CA3AF]'}`}>
-                      {isDone ? 'Done' : 'Active'}
-                    </span>
-                    <ChevronRight size={16} color="#D1D5DB" />
+                    ✓
+                  </button>
+                
+                  <div className="flex-1 min-w-0">
+                    
+                  <p className={`text-[14px] font-semibold transition-all duration-150 truncate md:truncate ${
+                      isDone ? 'text-[#9CA3AF] line-through' : 'text-[#1A1A2E]'
+                    }`}>
+                      {goal.title.length > 30 ? `${goal.title.slice(0, 30)}...` : goal.title}
+                    </p>
+                    <p className="hidden md:block text-[12px] text-[#9CA3AF] leading-relaxed mt-0.5 truncate">
+                      {goal.description}
+                    </p>
                   </div>
+                
+                  <div className={`w-2 h-2 rounded-full shrink-0 ${isDone ? 'bg-[#A78BFA]' : 'bg-[#E5E7EB]'}`} />
+                </div>
                 )
               })}
             </div>
@@ -268,13 +277,14 @@ const Home = () => {
           </div>
         )}
       </div>
+      {/* FAB */}
       <button
         onClick={() => navigate('/goals/new')}
-        className="fixed bottom-24 right-6 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-[#F5A623] text-[#0F1117] border-none cursor-pointer flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95 z-10"
+        className="fixed bottom-28 right-5 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-[#F5A623] text-[#0F1117] border-none cursor-pointer flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95 z-10"
         aria-label="Add custom goal"
         >
         <Plus size={24} />
-    </button>
+      </button>
     </div>
   )
 }

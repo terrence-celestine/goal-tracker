@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import CustomGoal from './pages/CustomGoal'
 import Achievements from './pages/Achievements'
+import Profile from './pages/Pages'
 
 function App() {
   
@@ -25,7 +26,8 @@ function App() {
           <Route path="/onboarding/goals" element={<GoalSuggestions />} />
           <Route path="/goals/new" element={<CustomGoal />} />
           <Route path="/goals/:id" element={<GoalDetails />} />
-          <Route path="/achievements" element={<Achievements />} />
+          <Route path="/achievements" element={<Achievements />} /> 
+          <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </Router>
