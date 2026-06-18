@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Helmet } from 'react-helmet-async'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -32,7 +33,9 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#0F1117] font-sans flex flex-col">
-
+      <Helmet>
+  <title>Sign in · goal.</title>
+</Helmet>
       {/* Top accent bar */}
       <div className="h-1 w-full bg-[#F5A623]" />
 

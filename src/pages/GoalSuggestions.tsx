@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import type { Goal } from '../types/goal'
+import { Helmet } from 'react-helmet-async'
 
 
 export default function GoalSuggestions() {
@@ -57,7 +58,9 @@ export default function GoalSuggestions() {
 
   return (
     <div className="min-h-screen bg-[#0F1117] text-white px-5 pt-8 pb-32 font-sans">
-
+    <Helmet>
+      <title>Your suggestions · goal. - Track Your Progress, Achieve Your Dreams!</title>
+    </Helmet>
       <button
         onClick={() => navigate('/onboarding')}
         className="flex items-center gap-1.5 text-sm text-gray-400 mb-6 bg-transparent border-none cursor-pointer p-0"

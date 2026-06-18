@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Lock, Trophy } from 'lucide-react'
+import { Helmet } from 'react-helmet-async'
 
 interface Achievement {
   id: number
@@ -40,7 +41,9 @@ export default function Achievements() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-
+<Helmet>
+  <title>Achievements · goal.</title>
+</Helmet>
       {/* Top bar */}
       <div className="flex items-center justify-between px-8 py-5 border-b border-[#EDEBE6] bg-[#F7F6F2]">
         <div>

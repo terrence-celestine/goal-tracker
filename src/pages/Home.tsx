@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronRight, Plus } from 'lucide-react'
 import type { Goal } from '../types/goal'
+import { Helmet } from 'react-helmet-async'
 
 const Home = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -141,7 +142,9 @@ const Home = () => {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-
+      <Helmet>
+        <title>Home · goal. - Track Your Progress, Achieve Your Dreams!</title>
+      </Helmet>
       {/* Top bar */}
       <div className="flex items-center justify-between px-8 py-5 border-b border-[#EDEBE6] bg-[#F7F6F2]">
         <div>

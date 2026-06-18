@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 
 interface Category {
@@ -65,7 +66,9 @@ export default function CustomGoal() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden bg-[#F7F6F2]">
-
+  <Helmet>
+    <title>New goal · goal.</title>
+  </Helmet>
       {/* Top bar */}
       <div className="flex items-center justify-between px-8 py-5 border-b border-[#EDEBE6] bg-[#F7F6F2]">
         <button

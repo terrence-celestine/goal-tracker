@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useNavigate } from 'react-router-dom'
 
 interface Category {
@@ -65,7 +66,9 @@ const Onboarding = () => {
 
   return (
     <div style={{ background: '#0F1117', minHeight: '100vh', color: '#fff', padding: '2rem 1.25rem 8rem', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
-
+    <Helmet>
+      <title>Get started · goal.</title>
+    </Helmet>
       <p style={{ fontSize: '26px', fontWeight: 600, lineHeight: 1.3, marginBottom: '6px' }}>
         What do you want<br />to work on?
       </p>

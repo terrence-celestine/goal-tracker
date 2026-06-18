@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, Calendar, FileText, AlertTriangle, CircleCheck, Clock, PlayCircle } from 'lucide-react'
 import type { Goal } from '../types/goal'
+import { Helmet } from 'react-helmet-async'
 
 const CATEGORY_COLORS: Record<number, { bg: string; text: string; dot: string }> = {
   0: { bg: '#EDE9FE', text: '#7C3AED', dot: '#A78BFA' },
@@ -220,6 +221,9 @@ export default function GoalDetail() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
+      <Helmet>
+        <title>{goal.title} · goal. - Track Your Progress, Achieve Your Dreams!</title>
+      </Helmet>
       {/* Hero header */}
       <div className="bg-[#1A1A2E] px-8 pt-8 pb-10 relative overflow-hidden">
         <div

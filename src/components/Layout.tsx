@@ -1,4 +1,5 @@
 import { useNavigate, useLocation, Outlet } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const NAV_ITEMS = [
   { label: 'Home', icon: 'ti-home', path: '/' },
@@ -10,6 +11,11 @@ const NAV_ITEMS = [
 export default function Layout() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { logout } = useAuth()
+  const handleSignOut = async () => {
+    await logout()
+    navigate('/login')
+  }
 
   return (
     <div className="flex min-h-screen md:h-screen bg-[#F7F6F2] font-sans md:overflow-hidden">
@@ -43,7 +49,10 @@ export default function Layout() {
           })}
         </nav>
 
-        <button className="flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium text-[#F87171] bg-transparent border-none cursor-pointer">
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-3 px-5 py-2.5 text-[13px] font-medium text-[#F87171] bg-transparent border-none cursor-pointer"
+        >
           <i className="ti ti-logout" style={{ fontSize: '16px' }} aria-hidden="true" />
           Sign out
         </button>

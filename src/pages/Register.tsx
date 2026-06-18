@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { Helmet } from 'react-helmet-async'
 
 interface FormState {
   displayName: string
@@ -86,7 +87,9 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-[#0F1117] font-sans flex flex-col">
-
+    <Helmet>
+      <title>Create account · goal. - Track Your Progress, Achieve Your Dreams!</title>
+    </Helmet>
       {/* Top accent bar */}
       <div className="h-1 w-full bg-[#F5A623]" />
 
