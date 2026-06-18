@@ -189,6 +189,42 @@ export default function GoalDetail() {
     </div>
   )
   
+  if (!goal) return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="bg-[#1A1A2E] px-8 pt-8 pb-10">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-[#7C7CA8] text-[13px] font-medium bg-transparent border-none cursor-pointer p-0"
+        >
+          <ArrowLeft size={16} />
+          Back to goals
+        </button>
+      </div>
+  
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
+        <div className="w-20 h-20 bg-[#EDE9FE] rounded-3xl flex items-center justify-center mb-6">
+          <span className="text-4xl">🎯</span>
+        </div>
+        <p className="text-[22px] font-bold text-[#1A1A2E] mb-2">Nothing here yet</p>
+        <p className="text-[13px] text-[#9CA3AF] leading-relaxed mb-8 max-w-xs">
+          This goal couldn't be loaded. It may have been deleted or something went wrong.
+        </p>
+        <button
+          onClick={() => navigate('/')}
+          className="px-6 py-3.5 rounded-2xl bg-[#1A1A2E] text-white text-[14px] font-semibold border-none cursor-pointer mb-3 w-full max-w-xs"
+        >
+          Back to goals
+        </button>
+        <button
+          onClick={() => navigate('/goals/new')}
+          className="px-6 py-3.5 rounded-2xl border border-[#EDEBE6] text-[#A78BFA] text-[14px] font-semibold bg-transparent cursor-pointer w-full max-w-xs"
+        >
+          Create a new goal
+        </button>
+      </div>
+    </div>
+  )
+  
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Hero header */}
