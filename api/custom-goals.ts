@@ -3,7 +3,6 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '../src/lib/schema';
-import { eq } from 'drizzle-orm';   
 import { parse } from 'cookie';
 import jwt from 'jsonwebtoken';
 
@@ -26,7 +25,6 @@ function getUserFromRequest(req: VercelRequest) {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const user = getUserFromRequest(req);
     if (!user) return res.status(401).json({ error: 'Not authenticated' });
-    const userId = user.userId;
 
   if (req.method === 'POST') {
     const { title, description, categoryId, dueDate } = req.body;
