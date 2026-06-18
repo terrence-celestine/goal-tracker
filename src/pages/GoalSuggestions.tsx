@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import type { Goal } from '../types/goal'
 
-interface Goal {
-  title: string
-  description: string
-}
 
 export default function GoalSuggestions() {
   const [goals, setGoals] = useState<Goal[]>([])

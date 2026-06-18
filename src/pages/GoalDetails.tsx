@@ -1,14 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Check, Calendar, FileText, AlertTriangle, CircleCheck, Clock, PlayCircle } from 'lucide-react'
-
-interface Goal {
-  id?: number
-  title: string
-  description: string
-  dueDate?: string
-  status?: string
-}
+import type { Goal } from '../types/goal'
 
 const CATEGORY_COLORS: Record<number, { bg: string; text: string; dot: string }> = {
   0: { bg: '#EDE9FE', text: '#7C3AED', dot: '#A78BFA' },
@@ -224,7 +217,7 @@ export default function GoalDetail() {
       </div>
     </div>
   )
-  
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Hero header */}

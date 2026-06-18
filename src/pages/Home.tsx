@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronRight, Plus } from 'lucide-react'
-
-interface Goal {
-    id?: number
-    title: string
-    description: string
-    status?: string
-}
+import type { Goal } from '../types/goal'
 
 const Home = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
